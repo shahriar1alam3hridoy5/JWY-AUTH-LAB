@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const users = require("./users");
 const authenticateToken = require("./authMiddleware");
-
+const blacklist = require("./blacklist");   // bonus task
 const app = express();
 app.use(express.json());
 
-const SECRET_KEY = "YOUR_SECRET_KEY_HERE";
+const SECRET_KEY = "mysecret123";
 
 // Login Route
 app.post("/login", (req, res) => {
@@ -26,7 +26,7 @@ app.post("/login", (req, res) => {
   const token = jwt.sign(
     { userId: user.id, role: user.role },
     SECRET_KEY,
-    { expiresIn: "1h" }
+    { expiresIn: "10s" }
   );
 
   res.json({ token });
@@ -47,6 +47,12 @@ app.get("/admin", authenticateToken, (req, res) => {
     return res.status(403).json({ message: "Forbidden: Admins only" });
   }
   res.json({ message: "Welcome Admin!" });
+});
+
+// bonus Logout Route
+app.post("/logout", authenticateToken, (req, res) => {
+  blacklist.push(req.token);
+  res.json({ message: "Logged out successfully" });
 });
 
 app.listen(3000, () => {

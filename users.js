@@ -1,4 +1,3 @@
-// users.js
 const bcrypt = require("bcryptjs");
 
 const users = [
